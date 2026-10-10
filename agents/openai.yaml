@@ -1,0 +1,4 @@
+interface:
+  display_name: "Bilibili Media Workflow"
+  short_description: "按任务下载B站视频或音频，校验字幕并解析内容，支持多种后续交付"
+  default_prompt: "使用 $bilibili-media-workflow 处理这个B站视频，按我的目标选择下载范围和解析方式。"
