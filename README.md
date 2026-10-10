@@ -33,12 +33,14 @@ git clone https://github.com/DongSu13/bilibili-media-workflow.git '<SKILL_DIR>'
 | 功能 | 需要用户提供 |
 |---|---|
 | 离线下载规则测试、CLI 帮助 | Node.js 16+；本次使用 Node.js 24 |
-| B站下载 | [BilibiliVideoDownload v3.3.3](https://github.com/BilibiliVideoDownload/BilibiliVideoDownload/tree/v3.3.3) 源码、已有 CommonJS `got` 11、TypeScript、`nanoid` 3，以及 ffmpeg |
+| B站下载 | [BilibiliVideoDownload v3.3.3](https://github.com/BilibiliVideoDownload/BilibiliVideoDownload/tree/v3.3.3) 源码、已有 CommonJS `got` 11.x（至少 11.8.5）、TypeScript、`nanoid` 3，以及 ffmpeg |
 | 媒体检查、音频与抽帧 | Python 3.9+、ffmpeg；ffprobe 可选 |
 | Whisper 转写 | 与解释器匹配的 NumPy、faster-whisper / CTranslate2、本地模型 |
 | SenseVoice 转写 | NumPy、sherpa-onnx、本地 SenseVoice ONNX 模型与 token 文件 |
 
 不需要安装下载器的 Electron 界面；传入可信源码目录和已有依赖目录即可。项目不自动安装依赖或下载模型。Python 示例使用 `py -3.9`，其他系统请换成明确指定的 Python 3.9+ 解释器。认证可选，DPAPI 会话仅支持同一 Windows 用户/机器，登录流程由外部授权工具处理。
+
+联网前核对实际依赖版本：旧 `got`（低于 11.8.5）存在 [CVE-2022-33987 跳转漏洞](https://github.com/advisories/GHSA-pfrx-2q88-qq97)。脚本目前只检查 CommonJS 接口，不强制最低版本；离线测试通过不代表用户提供的运行环境已修复漏洞。
 
 ## 使用示例
 

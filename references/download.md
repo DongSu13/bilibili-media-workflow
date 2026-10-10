@@ -8,10 +8,12 @@ Upstream: [BilibiliVideoDownload/BilibiliVideoDownload](https://github.com/Bilib
 
 - Node.js 16 or newer; tested with Node 24.
 - User-supplied BilibiliVideoDownload **3.3.3** source layout, including `src/core/bilibili.ts` and its local imports. Other layouts need inspection before use.
-- Existing CommonJS `got` 11, TypeScript, and `nanoid` 3 dependencies. Pass `--deps` to an existing package root containing their `node_modules` when the source checkout has no installed dependencies. Do not install the full Electron/Vue application just to run this adapter, or install new dependencies automatically.
+- Existing CommonJS `got` 11.8.5 or newer within the 11.x series, TypeScript, and `nanoid` 3 dependencies. Pass `--deps` to an existing package root containing their `node_modules` when the source checkout has no installed dependencies. Do not install the full Electron/Vue application just to run this adapter, or install new dependencies automatically.
 - A configured ffmpeg executable that can inspect MP4/AAC and, for video mode, remux the selected codecs. CPU processing is sufficient; CUDA is not required. A cut-down ffmpeg may lack codecs or containers. The adapter checks the executable before downloading media but cannot guarantee all codec capabilities from its version alone.
 
 The original project's MIT license permits reuse with its copyright and license notice retained when copying substantial source. This adapter loads the supplied core in place. The original source, dependency licenses, ffmpeg build license, and rights in downloaded media remain separate; an MIT source license does not grant media redistribution rights. No ffmpeg or original source binary is bundled here.
+
+Check the actual installed `got` version before network use: releases before 11.8.5 are affected by [CVE-2022-33987 / GHSA-pfrx-2q88-qq97](https://github.com/advisories/GHSA-pfrx-2q88-qq97), a redirect-to-UNIX-socket vulnerability. The adapter checks CommonJS interfaces but does not enforce this minimum version. API requests follow redirects by default; media transfers disable redirects. Offline test success does not establish that supplied dependencies are patched.
 
 ## Arguments and examples
 

@@ -8,7 +8,7 @@ This repository contains a locally maintained workflow, adapter/helpers and test
 - Original copyright: `Copyright (c) 2021 blogwy`.
 - [Original MIT license](https://github.com/BilibiliVideoDownload/BilibiliVideoDownload/blob/v3.3.3/LICENSE).
 - `scripts/download.cjs` loads the user-supplied `src/core/bilibili.ts` parser/task builder in place, provides a CLI/network bridge, and handles selected streams, preservation and verification. It is not a redistributed Electron application or an official upstream release.
-- Runtime dependencies: [got](https://github.com/sindresorhus/got/tree/v11.8.3), [TypeScript](https://github.com/microsoft/TypeScript), [nanoid](https://github.com/ai/nanoid/tree/3.3.3). These are supplied separately; CommonJS compatibility matters.
+- Runtime dependencies: [got](https://github.com/sindresorhus/got/tree/v11.8.6) (11.x, at least 11.8.5), [TypeScript](https://github.com/microsoft/TypeScript), [nanoid](https://github.com/ai/nanoid/tree/3.3.3). These are supplied separately; CommonJS compatibility matters. The fixed-version floor addresses [CVE-2022-33987](https://github.com/advisories/GHSA-pfrx-2q88-qq97); it is not a comprehensive dependency security audit.
 
 The following upstream notice applies to BilibiliVideoDownload, not to unrelated original files in this repository:
 

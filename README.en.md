@@ -33,12 +33,14 @@ Reload Codex skills and invoke `$bilibili-media-workflow`, or run the scripts di
 | Feature | User-supplied prerequisites |
 |---|---|
 | Offline downloader tests/help | Node.js 16+; tested here with Node.js 24 |
-| Downloads | [BilibiliVideoDownload v3.3.3](https://github.com/BilibiliVideoDownload/BilibiliVideoDownload/tree/v3.3.3) source, installed CommonJS `got` 11, TypeScript, `nanoid` 3, and ffmpeg |
+| Downloads | [BilibiliVideoDownload v3.3.3](https://github.com/BilibiliVideoDownload/BilibiliVideoDownload/tree/v3.3.3) source, installed CommonJS `got` 11.x (11.8.5 or newer), TypeScript, `nanoid` 3, and ffmpeg |
 | Media inspection/extraction | Python 3.9+, ffmpeg; optional ffprobe |
 | Whisper drafts | Compatible NumPy, faster-whisper / CTranslate2, local model directory |
 | SenseVoice drafts | NumPy, sherpa-onnx, local SenseVoice ONNX model and token file |
 
 The Electron UI is unnecessary. Pass trusted source/dependency directories; scripts do not install dependencies or download models. Use an explicit compatible Python interpreter; `py -3.9` below is the Windows launcher. Optional DPAPI authentication requires the same Windows user/machine; login is handled separately.
+
+Check installed dependencies before network use: `got` before 11.8.5 is affected by the [CVE-2022-33987 redirect vulnerability](https://github.com/advisories/GHSA-pfrx-2q88-qq97). The adapter checks CommonJS interfaces but does not enforce the minimum version; offline tests do not establish that a user-supplied runtime is patched.
 
 ## Examples
 
