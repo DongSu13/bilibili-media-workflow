@@ -1,5 +1,6 @@
 ---
 name: bilibili-media-workflow
+license: MIT
 description: Use when a user provides a Bilibili/B站 video link or downloaded B站 media and requests downloads, audio/video extraction, transcription, multimodal understanding, or source-grounded downstream tasks. Also applies to missing or unreliable subtitles and relevant comments/danmaku; not publishing or general account management.
 ---
 

@@ -1,6 +1,6 @@
 # Third-Party References and License Boundaries
 
-This repository contains a locally maintained workflow, adapter/helpers and tests. It does not bundle the downloader's source, ffmpeg, ASR libraries, model weights or media. Consult the selected upstream versions and model cards for applicable permissions. This file does not license this repository's own work under MIT or under any other license.
+The original workflow instructions, adapter/helpers, tests and documentation in this repository are licensed under [MIT](LICENSE), Copyright (c) 2026 DongSu13. It does not bundle the downloader's source, ffmpeg, ASR libraries, model weights or media. Those third-party works remain under their own licenses; consult the selected upstream versions and model cards. The repository MIT license does not override the notices below or grant rights in third-party media, checkpoints or services.
 
 ## Download adapter
 

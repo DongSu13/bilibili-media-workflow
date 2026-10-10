@@ -173,6 +173,10 @@ async function sha256(file) {
 }
 function dependencies(source, deps) {
   const requireAt = Module.createRequire(path.join(path.resolve(deps || source), 'package.json'));
+  let version;
+  try { version = requireAt('got/package.json').version; } catch { fail('Cannot verify got version; provide CommonJS got 11.8.5 or newer within 11.x'); }
+  const release = typeof version === 'string' && version.match(/^11\.(\d+)\.(\d+)$/);
+  if (!release || !(Number(release[1]) > 8 || (Number(release[1]) === 8 && Number(release[2]) >= 5))) fail('This adapter requires patched CommonJS got 11 (11.8.5 or newer)');
   let got;
   try { got = requireAt('got'); } catch { fail('Existing got 11 dependency not found; pass --deps to an installed package root'); }
   if (typeof got !== 'function' || typeof got.stream !== 'function') fail('This adapter requires CommonJS got 11');
@@ -248,7 +252,7 @@ async function main(argv = process.argv.slice(2)) {
   const source = path.resolve(options.source);
   if (!fs.existsSync(path.join(source, 'src', 'core', 'bilibili.ts'))) fail('Source must contain src/core/bilibili.ts');
   const { requireAt, got: baseGot } = dependencies(source, options.deps);
-  const got = baseGot.extend({ timeout: { request: 30000 }, retry: { limit: 0 } });
+  const got = baseGot.extend({ timeout: { request: 30000 }, retry: { limit: 0 }, followRedirect: false });
   let ua = 'Mozilla/5.0 (compatible; BilibiliMediaAdapter/1.0)';
   const publicURL = `https://www.bilibili.com/video/${options.bvid}/`;
   const response = await got('https://api.bilibili.com/x/web-interface/view', { searchParams: { bvid: options.bvid }, responseType: 'json', headers: { 'User-Agent': ua } });

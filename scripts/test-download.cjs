@@ -2,6 +2,7 @@
 const assert = require('node:assert/strict');
 const path = require('node:path');
 const fs = require('node:fs');
+const os = require('node:os');
 const { spawnSync } = require('node:child_process');
 const adapterPath = path.join(__dirname, 'download.cjs');
 assert.ok(fs.existsSync(adapterPath), 'Download adapter must exist before its behavior can pass');
@@ -101,6 +102,53 @@ test('only temporary network and server failures are retried', () => {
   assert.equal(api.isRetryable({ code: 'ETIMEDOUT' }), true);
   assert.equal(api.isRetryable({ response: { statusCode: 503 } }), true);
   for (const error of [{ response: { statusCode: 403 } }, { response: { statusCode: 412 } }, { response: { statusCode: 429 } }, { code: 'EACCES' }, new api.AdapterError('Playback identity rejected')]) assert.equal(api.isRetryable(error), false);
+});
+function withGotFixture(version, operation) {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'bilibili-got-test-'));
+  const packageRoot = path.join(root, 'node_modules', 'got');
+  fs.mkdirSync(packageRoot, { recursive: true });
+  fs.writeFileSync(path.join(packageRoot, 'package.json'), JSON.stringify({ name: 'got', version, main: 'index.js' }));
+  fs.writeFileSync(path.join(packageRoot, 'index.js'), 'function got() {} got.stream = function () {}; module.exports = got;');
+  try { operation(root, packageRoot); }
+  finally {
+    assert.equal(fs.realpathSync(path.dirname(root)), fs.realpathSync(os.tmpdir()));
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+}
+test('vulnerable got is refused before network use', () => {
+  for (const version of ['11.7.0', '11.8.3', '11.8.4']) {
+    withGotFixture(version, root => assert.throws(() => api.dependencies(root), /11\.8\.5/));
+  }
+});
+test('patched CommonJS got 11 releases remain usable', () => {
+  for (const version of ['11.8.5', '11.8.6', '11.9.0']) {
+    withGotFixture(version, root => assert.equal(typeof api.dependencies(root).got.stream, 'function'));
+  }
+});
+test('unknown or incompatible got versions are refused', () => {
+  for (const version of [undefined, 'not-a-version', '11.8.5-beta.1', '12.1.0']) {
+    withGotFixture(version, root => assert.throws(() => api.dependencies(root), /got/));
+  }
+});
+test('metadata API requests disable redirects before invoking the transport', () => {
+  withGotFixture('11.8.6', (root, packageRoot) => {
+    const source = path.join(root, 'source');
+    fs.mkdirSync(path.join(source, 'src', 'core'), { recursive: true });
+    fs.writeFileSync(path.join(source, 'src', 'core', 'bilibili.ts'), '// Metadata mode does not execute the core.');
+    const response = { body: { code: 0, data: { bvid: bv, title: 'Fixture', pages: [{ page: 1, cid: 10, part: 'One', duration: 8 }] } } };
+    fs.writeFileSync(path.join(packageRoot, 'index.js'), `
+      async function got() { return ${JSON.stringify(response)}; }
+      got.stream = function () { throw new Error('No media transfer in metadata mode'); };
+      got.extend = function (defaults) {
+        if (defaults.followRedirect !== false) throw new Error('API redirects must be disabled');
+        return got;
+      };
+      module.exports = got;
+    `);
+    const result = spawnSync(process.execPath, [adapterPath, '--url', bv, '--source', source, '--deps', root, '--info'], { encoding: 'utf8' });
+    assert.equal(result.status, 0, 'API redirect policy must be set before a metadata request');
+    assert.equal(JSON.parse(result.stdout).bvid, bv);
+  });
 });
 test('offline help exits successfully without source, dependencies or network', () => {
   const result = spawnSync(process.execPath, [adapterPath, '--help'], { encoding: 'utf8' });

@@ -40,7 +40,7 @@ git clone https://github.com/DongSu13/bilibili-media-workflow.git '<SKILL_DIR>'
 
 不需要安装下载器的 Electron 界面；传入可信源码目录和已有依赖目录即可。项目不自动安装依赖或下载模型。Python 示例使用 `py -3.9`，其他系统请换成明确指定的 Python 3.9+ 解释器。认证可选，DPAPI 会话仅支持同一 Windows 用户/机器，登录流程由外部授权工具处理。
 
-联网前核对实际依赖版本：旧 `got`（低于 11.8.5）存在 [CVE-2022-33987 跳转漏洞](https://github.com/advisories/GHSA-pfrx-2q88-qq97)。脚本目前只检查 CommonJS 接口，不强制最低版本；离线测试通过不代表用户提供的运行环境已修复漏洞。
+旧 `got`（低于 11.8.5）存在 [CVE-2022-33987 跳转漏洞](https://github.com/advisories/GHSA-pfrx-2q88-qq97)。脚本在联网前核对版本，拒绝旧版、未知版本、预发布版和非 11.x 版本，并禁止 API 与媒体请求自动跳转；这不代表已审计所有外部依赖。
 
 ## 使用示例
 
@@ -74,14 +74,14 @@ Codex 请求示例：
 
 ## 验证范围与限制
 
-整理时通过 17 项 Node.js 测试（含真实上游解析器的离线适配检查）及 13 项 Python 3.9 测试。Python 测试使用 ffmpeg 生成的合成媒体、真实解码和替代的 ASR 推理，覆盖导出/抽帧、禁止覆盖、时间偏移、静音与结果复用；不是 ASR 模型准确率测试。
+更新时通过 21 项 Node.js 测试（含真实上游解析器的离线适配检查、依赖版本检查和禁止 API 自动跳转）及 13 项 Python 3.9 测试。Python 测试使用 ffmpeg 生成的合成媒体、真实解码和替代的 ASR 推理，覆盖导出/抽帧、禁止覆盖、时间偏移、静音与结果复用；不是 ASR 模型准确率测试。
 
 ```powershell
 node scripts/test-download.cjs
 py -3.9 -B -m unittest discover -s scripts -p 'test_*.py' -v
 ```
 
-默认不配置环境变量时，Node.js 运行 16 项纯离线测试；Python 的媒体/ASR 集成测试会跳过。启用相关测试前设置：
+默认不配置环境变量时，Node.js 运行 20 项纯离线测试；Python 的媒体/ASR 集成测试会跳过。启用相关测试前设置：
 
 ```powershell
 $env:BILIBILI_CORE_SOURCE = '<SOURCE_DIR>'
@@ -100,4 +100,4 @@ $env:MEDIA_TEST_VENDOR = '<NUMPY_VENDOR_DIR>'
 
 下载适配依据 [BilibiliVideoDownload](https://github.com/BilibiliVideoDownload/BilibiliVideoDownload)；ASR 依据 [Whisper](https://github.com/openai/whisper)、[faster-whisper](https://github.com/SYSTRAN/faster-whisper)、[sherpa-onnx](https://github.com/k2-fsa/sherpa-onnx) 和 [SenseVoice](https://github.com/FunAudioLLM/SenseVoice)。详细引用及上游许可见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。本项目独立维护，与 Bilibili 及这些上游项目无官方关系。
 
-本仓库尚未为自身代码和文档选择开源许可证；没有统一套用 MIT。上游源码、运行库、模型权重与媒体内容分别受各自许可和使用条件约束，“仅供学习”不替代相应授权。
+本仓库的原创技能说明、辅助代码、测试与文档采用 [MIT 许可证](LICENSE)，允许使用、修改和再分发，也允许商业使用；分发时须保留版权和许可声明。代码按现状提供，不作担保。上游源码、运行库、模型权重与媒体内容分别受各自许可和使用条件约束；MIT 及“仅供学习”都不授予对第三方资源的额外权限。

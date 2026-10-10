@@ -13,7 +13,7 @@ Upstream: [BilibiliVideoDownload/BilibiliVideoDownload](https://github.com/Bilib
 
 The original project's MIT license permits reuse with its copyright and license notice retained when copying substantial source. This adapter loads the supplied core in place. The original source, dependency licenses, ffmpeg build license, and rights in downloaded media remain separate; an MIT source license does not grant media redistribution rights. No ffmpeg or original source binary is bundled here.
 
-Check the actual installed `got` version before network use: releases before 11.8.5 are affected by [CVE-2022-33987 / GHSA-pfrx-2q88-qq97](https://github.com/advisories/GHSA-pfrx-2q88-qq97), a redirect-to-UNIX-socket vulnerability. The adapter checks CommonJS interfaces but does not enforce this minimum version. API requests follow redirects by default; media transfers disable redirects. Offline test success does not establish that supplied dependencies are patched.
+Releases before 11.8.5 are affected by [CVE-2022-33987 / GHSA-pfrx-2q88-qq97](https://github.com/advisories/GHSA-pfrx-2q88-qq97), a redirect-to-UNIX-socket vulnerability. Before network use, the adapter reads package metadata and rejects vulnerable, unknown, prerelease or non-11.x versions, then checks CommonJS interfaces. Both API requests and media transfers disable automatic redirects. These protections do not constitute a comprehensive audit of supplied dependencies.
 
 ## Arguments and examples
 
@@ -63,4 +63,4 @@ $env:BILIBILI_CORE_DEPS = '<EXISTING_DEPENDENCY_ROOT>'
 node '<SKILL_DIR>\scripts\test-download.cjs'
 ```
 
-The tests cover public URL parsing, page ranges, filenames/output containment, different-BV rejection and output preservation, audio-only transfer planning, AAC/bitrate selection and video downgrade, strict arguments, log redaction, media inspection, offline CLI help, and optionally the real source `parseHtml`/`getDownloadList` behavior. They do not contact a CDN, test a real login/session, or prove that future Bilibili API changes remain compatible.
+The tests cover public URL parsing, page ranges, filenames/output containment, different-BV rejection and output preservation, audio-only transfer planning, AAC/bitrate selection and video downgrade, strict arguments, log redaction, media inspection, dependency-version refusal, API redirect policy, offline CLI help, and optionally the real source `parseHtml`/`getDownloadList` behavior. They do not contact a CDN, test a real login/session, or prove that future Bilibili API changes remain compatible.

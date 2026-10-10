@@ -40,7 +40,7 @@ Reload Codex skills and invoke `$bilibili-media-workflow`, or run the scripts di
 
 The Electron UI is unnecessary. Pass trusted source/dependency directories; scripts do not install dependencies or download models. Use an explicit compatible Python interpreter; `py -3.9` below is the Windows launcher. Optional DPAPI authentication requires the same Windows user/machine; login is handled separately.
 
-Check installed dependencies before network use: `got` before 11.8.5 is affected by the [CVE-2022-33987 redirect vulnerability](https://github.com/advisories/GHSA-pfrx-2q88-qq97). The adapter checks CommonJS interfaces but does not enforce the minimum version; offline tests do not establish that a user-supplied runtime is patched.
+`got` before 11.8.5 is affected by the [CVE-2022-33987 redirect vulnerability](https://github.com/advisories/GHSA-pfrx-2q88-qq97). The adapter verifies package metadata before network use, rejects vulnerable, unknown, prerelease or non-11.x versions, and disables automatic API/media redirects. This is not a comprehensive audit of external dependencies.
 
 ## Examples
 
@@ -68,14 +68,14 @@ See [download.md](references/download.md) for adapter/authentication details, [a
 
 ## Verification and limits
 
-Packaging checks passed 17 Node.js tests, including an offline integration with the actual upstream parser, and 13 Python 3.9 tests. Python tests used synthetic media, actual ffmpeg decoding and substituted ASR inference. They verify extraction, output preservation, timestamps, silence handling and reuse, rather than model accuracy.
+Update checks passed 21 Node.js tests, including an offline integration with the actual upstream parser, dependency-version refusal and API redirect policy, and 13 Python 3.9 tests. Python tests used synthetic media, actual ffmpeg decoding and substituted ASR inference. They verify extraction, output preservation, timestamps, silence handling and reuse, rather than model accuracy.
 
 ```powershell
 node scripts/test-download.cjs
 py -3.9 -B -m unittest discover -s scripts -p 'test_*.py' -v
 ```
 
-Without configuration, Node.js runs 16 offline tests and Python skips optional integration tests. To enable those checks with existing local installations:
+Without configuration, Node.js runs 20 offline tests and Python skips optional integration tests. To enable those checks with existing local installations:
 
 ```powershell
 $env:BILIBILI_CORE_SOURCE = '<SOURCE_DIR>'
@@ -94,4 +94,4 @@ Generated manifests/transcripts may contain local paths, media content and sourc
 
 The adapter uses [BilibiliVideoDownload](https://github.com/BilibiliVideoDownload/BilibiliVideoDownload). ASR uses [Whisper](https://github.com/openai/whisper), [faster-whisper](https://github.com/SYSTRAN/faster-whisper), [sherpa-onnx](https://github.com/k2-fsa/sherpa-onnx) and [SenseVoice](https://github.com/FunAudioLLM/SenseVoice). See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for references and upstream license notices. This is an independently maintained workflow, unaffiliated with Bilibili or those projects.
 
-No open-source license has yet been selected for this repository's own code and documentation. No blanket MIT license is asserted. Upstream source, runtimes, weights and media retain their respective licensing and access conditions; a learning-use statement does not grant redistribution rights.
+The original skill instructions, helpers, tests and documentation are licensed under [MIT](LICENSE), allowing use, modification, redistribution and commercial use while requiring preservation of the copyright and license notice. The software is provided as-is without warranty. Upstream source, runtimes, weights and media retain their respective licensing and access conditions; neither MIT nor a learning-use statement grants additional rights in third-party resources.
